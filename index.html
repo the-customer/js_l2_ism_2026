@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CAN Match Center</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <div class="logo">CAN</div>
+            <div>
+                <h1>Match Center</h1>
+                <p>Tableau interactif Coupe d’Afrique</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="card match">
+            <div class="match-meta">
+                <div class="tag">Groupe A</div>
+                <div class="meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Temps</span>
+                        <span class="meta-value" id="time">0 min</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Stade</span>
+                        <span class="meta-value">Stade CAN Arena</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scoreboard">
+                <div class="team">
+                    <div class="flag">
+                        <!-- <img src="./drapeau-senegal.jpg" alt=""> -->
+                    </div>
+                    <div class="team-info">
+                        <div class="team-name" id="teamAName">...</div>
+                        <div class="team-sub">...</div>
+                    </div>
+                </div>
+
+                <div class="score">
+                    <div class="score-numbers" id="score">0 - 0</div>
+                    <div class="score-hint">Score</div>
+                </div>
+
+                <div class="team team-right">
+                    <div class="team-info">
+                        <div class="team-name" id="teamBName">...</div>
+                        <div class="team-sub">...</div>
+                    </div>
+                    <div class="flag">
+                        <!-- <img src="./Drapeau-Côte-d-Ivoire.jpg" alt=""> -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" id="startMatch">Démarrer le match</button>
+                <button class="btn btn-ghost" id="pauseMatch">Pause</button>
+
+                <button class="btn btn-primary" id="goalA">+ But ...</button>
+                <button class="btn btn-ghost" id="reset">Reset</button>
+                <button class="btn btn-primary" id="goalB">+ But ...</button>
+            </div>
+
+
+            <section class="card players">
+                <div class="players-header">
+                    <h2>Joueurs</h2>
+                    <p>Clique sur un joueur pour marquer un but (événement + DOM).</p>
+                </div>
+
+                <div class="players-grid">
+                    <div class="squad">
+                        <div class="squad-title">
+                            <span class="mini-flag flag flag-sen"></span>
+                            <span>Onze du ...</span>
+                        </div>
+
+                        <div class="cards" id="teamAPlayers">
+                            <!- rempli par JS ->
+                        </div>
+                    </div>
+
+                    <div class="squad">
+                        <div class="squad-title">
+                            <span class="mini-flag flag flag-civ"></span>
+                            <span>Onze de ...</span>
+                        </div>
+
+                        <div class="cards" id="teamBPlayers">
+                            <!- rempli par JS ->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="log">
+                    <div class="log-title">Match events</div>
+                    <ul class="log-list" id="eventsLog"></ul>
+                </div>
+            </section>
+
+            <!- Overlay animation GOAL ->
+                <div class="goal-overlay" id="goalOverlay" aria-hidden="true">
+                    <div class="goal-overlay-box">
+                        <div class="goal-overlay-title">GOAL!</div>
+                        <div class="goal-overlay-sub" id="goalOverlaySub">—</div>
+                    </div>
+                </div>
+
+
+                <div class="footerline">
+                    <div class="note">
+                        Astuce: teste les événements (clics) et le timer (minutes).
+                    </div>
+                    <div class="kbd">
+                        <span>R</span> Reset
+                    </div>
+                </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
