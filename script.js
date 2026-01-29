@@ -58,7 +58,7 @@ const CFG = {
     GOAL_P: 0.18, // probabilite de but
     SIM_MS: 2000, // frequence de simulation
     OVERLAY_MS: 900, // duree animation : GOOOOOOOOL!!!
-    LOG_MAX: 8
+    LOG_MAX: 8 // nombre max d'evenements dans le journal
 }
 
 
@@ -119,4 +119,115 @@ const el = {
     bPlayers: $("teamBPlayers"),
 }
 
-el.score.textContent = "toto - tata"
+// ===================================
+// ETAT AU MATCH (Variables)
+// ===================================
+const st = {
+    score: {
+        A: 0,
+        B: 0
+    },
+    minute: 0,
+    running: false, // demarre ou arrete le match
+    t: null, // timer principal
+    sim: null, // timer de simulation
+}
+
+// ===================================
+// FUNCTION UTILITAIRES 
+// ===================================
+
+// Modifier ldu texte dans le DOM
+/*
+function setTxt(node, txt) {
+    // if (node)
+    //     node.innerText = txt;
+    node && (node.innerText = txt);
+}
+*/
+const setTxt = (node, txt) => node && (node.innerText = txt);
+
+// Ajouter un evenment dans le journal:
+// const addLog = (msg) => {
+//     const li = "<li>" + msg + "</li>";
+//     el.log.innerHTML += li
+// }
+
+
+//Limiter le nombre d'evemenemt a afficher
+const limitLog = () => {
+    while (el.log.children.length > CFG.LOG_MAX) {
+        el.log.removeChild(el.log.lastElementChild);
+    }
+}
+const addLog = (msg) => {
+    if (!el.log) return;
+    const li = document.createElement("li"); //<li></li>
+    li.innerText = msg //<li>msg</li>
+    // el.log.appendChild(li)
+    el.log.prepend(li);
+    //
+    limitLog();
+}
+
+// Generer des initiales a partir d'un nom de joueur
+const initials = (name) => name
+    .split(" ")
+    .map(function (p) {
+        return p[0]
+    })
+    .slice(0, 2)
+    .join("")
+    .toUpperCase()
+
+// Nombre aleatoire
+const rnd = (n) => Math.floor(Math.random() * n);
+
+//choisir un element aleatoire dans le tableau
+const pick = (arr) => arr[rnd(arr.length)]
+
+//Recuperer une equipe par son id
+const teamById = (id) => TEAMS.find(t => t.id === id)
+
+
+// ===================================
+// INTERFACE UTILISATEUR 
+// ===================================
+
+
+const ui = {
+    score: () => setTxt(el.score, `${st.score.A} - ${st.score.B}`),
+    time: () => setTxt(el.time, `${st.minute} min`),
+
+    // Affichage de l'animation GOAL
+    overlay: (txt) => {
+        if (!el.overlay || !el.overlaySub) return;
+
+        setTxt(el.overlaySub, txt);
+        el.overlay.classList.add("is-open");
+        setTimeout(() => {
+            el.overlay.classList.remove("is-open");
+        }, CFG.OVERLAY_MS)
+    },
+
+    // Generer les joueurs dans le html
+    renderPlayers: (container, teamId) => {
+        if (!container) return;
+        const team = teamById(teamId);
+
+        container.innerHTML = team.players
+            .map(p => `
+            <button class="player-card" data-team="${teamId}" data-name="${p.name}" data-number="${p.number}">
+                <div class="avatar">${initials(p.name)}</div>
+                <div>${p.name}</div>
+            </button>
+        `)
+            .join("");
+    }
+}
+
+ui.score()
+ui.time()
+ui.renderPlayers(el.aPlayers, "A")
+
+// ui.overlay("Sadio Mane 12'")
