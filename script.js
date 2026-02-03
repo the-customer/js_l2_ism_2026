@@ -57,7 +57,7 @@ const CFG = {
     MIN_MS: 1000, // 1 min = 1 seconde
     GOAL_P: 0.18, // probabilite de but
     SIM_MS: 2000, // frequence de simulation
-    OVERLAY_MS: 900, // duree animation : GOOOOOOOOL!!!
+    OVERLAY_MS: 1900, // duree animation : GOOOOOOOOL!!!
     LOG_MAX: 8 // nombre max d'evenements dans le journal
 }
 
@@ -210,6 +210,18 @@ const ui = {
         }, CFG.OVERLAY_MS)
     },
 
+    // Activer / desactiver les boutons et les joueurs
+    enableManual: (on) => {
+        // el.goalA.disabled = !on;
+        // el.goalB.disabled = !on;
+        [el.goalA, el.goalB].forEach(b => b && (b.disabled = !on))
+
+        document.querySelectorAll(".player-card")
+            .forEach((b) => {
+                b.disabled = !on;
+            })
+    },
+
     // Generer les joueurs dans le html
     renderPlayers: (container, teamId) => {
         if (!container) return;
@@ -225,9 +237,107 @@ const ui = {
             .join("");
     }
 }
+// ===================================
+// LOGIQUE METIER : BUT 
+// ===================================
 
+function goal(teamId, player) {
+    st.score[teamId]++;
+    ui.score()
+
+    const team = teamById(teamId);
+
+    addLog(`${st.minute}' - BUT ${team.name} : ${player.name} (${player.number})`)
+
+    ui.overlay(`${team.name} - ${player.name}`)
+}
+
+function simulateGoal(teamId) {
+    if (st.minute <= 0 || st.minute >= CFG.DURATION) return;
+    const player = pick(teamById(teamId).players)
+    goal(teamId, player);
+}
+
+
+
+// ===================================
+// GESTION DU MATCH
+// ===================================
+
+function start() {
+    if (st.running || st.minute >= CFG.DURATION) return;
+    st.running = true;
+
+    el.start.disabled = true;
+    el.pause.disabled = false;
+    ui.enableManual(true);
+
+    addLog("Coup d'envoi !")
+
+    //chrono
+    st.t = setInterval(() => {
+        st.minute++;
+        ui.time();
+        if (st.minute >= CFG.DURATION) {
+            //fin du match
+            end()
+        }
+    }, CFG.MIN_MS);
+
+    //timer de simulation
+    st.sim = setInterval(() => {
+        if (Math.random() < CFG.GOAL_P) {
+            simulateGoal(Math.random() < 0.5 ? "A" : "B")
+        }
+    }, CFG.SIM_MS)
+}
+
+
+
+function end() {
+    ///
+    stop();
+    ui.enableManual(false);
+    ui.overlay("FIN DU MATCH")
+}
+
+function stop() {
+    st.running = false;
+    clearInterval(st.t);
+    clearInterval(st.sim);
+    el.start.disabled = false;
+    el.pause.disabled = true;
+    addLog("Pause")
+}
+
+function reset() {
+    stop();
+    st.score.A = st.score.B = 0;
+    st.minute = 0;
+    ui.score();
+    ui.time();
+    addLog("Matchj reinitialisé");
+}
+
+
+// ===================================
+// EVENEMENTS
+// ===================================
+
+el.start.addEventListener("click", start);
+el.pause.addEventListener("click", stop);
+el.reset.addEventListener("click", reset);
+
+
+
+// ===================================
+// INITIALISATION
+// ===================================
+
+
+ui.renderPlayers(el.aPlayers, "A")
+ui.renderPlayers(el.bPlayers, "B")
 ui.score()
 ui.time()
-ui.renderPlayers(el.aPlayers, "A")
 
-// ui.overlay("Sadio Mane 12'")
+ui.enableManual(false);
